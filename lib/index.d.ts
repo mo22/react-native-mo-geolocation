@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Event } from 'mo-core';
 import * as ios from './ios';
 import * as android from './android';
 /**
@@ -7,19 +7,32 @@ import * as android from './android';
 export interface GeolocationResult {
     /** timestamp in milliseconds since unix epoch */
     time: number;
+    /** latitude in degrees */
     latitude: number;
+    /** longitude in degrees */
     longitude: number;
+    /** latitude/longitude accuracy in meters */
     locationAccuracy: number;
+    /** altitude in meters */
     altitude: number;
+    /** altitude accuracy in meters */
     altitudeAccuracy: number;
+    /** course in degrees true north */
     course?: number;
+    /** speed in meters per second */
     speed?: number;
 }
+/**
+ * requested accuracy
+ */
 export declare enum GeolocationAccuracy {
+    /** only update on cell tower change */
     SIGNIFICANT = 1000,
+    /** low */
     LOW = 100,
     MEDIUM = 10,
     HIGH = -1,
+    /** very high */
     BEST = -2
 }
 export declare enum GeolocationPermissionStatus {
@@ -77,7 +90,6 @@ export declare class Geolocation {
     }): Promise<GeolocationPermissionStatus>;
     /**
      * request permissions
-     * @TODO: unavailable?/disabled?
      */
     static showSettings(): void;
     /**
@@ -89,9 +101,9 @@ export declare class Geolocation {
     /**
      * start observing the location permanently
      * @param options GeolocationOptions
-     * @returns rxjs.Observable<GeolocationResult>
+     * @returns Event<GeolocationResult>
      */
-    static observe(options?: GeolocationOptions): Observable<GeolocationResult>;
+    static observe(options?: GeolocationOptions): Event<GeolocationResult | Error>;
     /**
      * calculate distance between two coordinates
      * @returns distance in km

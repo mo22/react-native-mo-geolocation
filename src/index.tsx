@@ -86,7 +86,7 @@ export class Geolocation {
   public static readonly android = android;
 
   private static lastResult?: GeolocationResult;
-  private static observers: { observer: Event<GeolocationResult>; options: GeolocationOptions; }[] = [];
+  private static observers: { emit: (val: GeolocationResult|Error) => void; options: GeolocationOptions; }[] = [];
   private static subscription?: EmitterSubscription;
   private static currentConfig?: ios.Config|android.Config;
   private static verbose: boolean = false;
@@ -120,7 +120,7 @@ export class Geolocation {
             if (rs.type === 'didFailWithError') {
               const error = new GeolocationError(rs.error);
               for (const observer of this.observers) {
-                observer.observer.error(error);
+                observer.emit(error);
               }
             } else if (rs.type === 'didUpdateLocations') {
               const event: GeolocationResult = {
@@ -138,7 +138,7 @@ export class Geolocation {
               };
               this.lastResult = event;
               for (const observer of this.observers) {
-                observer.observer.next(event);
+                observer.emit(event);
               }
             }
           });
@@ -182,7 +182,7 @@ export class Geolocation {
               };
               this.lastResult = event;
               for (const observer of this.observers) {
-                observer.observer.next(event);
+                observer.emit(event);
               }
             }
           });
@@ -209,7 +209,7 @@ export class Geolocation {
 
       }
     } catch (e) {
-      for (const i of this.observers) i.observer.error(e);
+      for (const i of this.observers) i.emit(e);
       throw e;
     }
   }
@@ -279,7 +279,7 @@ export class Geolocation {
             }
           });
         });
-        ios.Module.requestAuthorization(args);
+        ios.Module!.requestAuthorization(args);
         return res;
       };
       if (status.authorizationStatus === ios.AuthorizationStatus.Denied) {
@@ -303,7 +303,6 @@ export class Geolocation {
 
   /**
    * request permissions
-   * @TODO: unavailable?/disabled?
    */
   public static showSettings() {
     if (ios.Module) {
@@ -325,21 +324,18 @@ export class Geolocation {
     }
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
-        subscription.unsubscribe();
+        sub.release();
         clearTimeout(timeout);
         reject(new GeolocationError('timeout'));
       }, options && options.timeout || (1000 * 15));
-      const subscription = this.observe(options).subscribe({
-        next: (value) => {
-          subscription.unsubscribe();
-          clearTimeout(timeout);
+      const sub = this.observe(options).subscribe((value) => {
+        sub.release();
+        clearTimeout(timeout);
+        if (value instanceof Error) {
+          reject(value);
+        } else {
           resolve(value);
-        },
-        error: (error) => {
-          subscription.unsubscribe();
-          clearTimeout(timeout);
-          reject(error);
-        },
+        }
       });
     });
   }
@@ -347,12 +343,12 @@ export class Geolocation {
   /**
    * start observing the location permanently
    * @param options GeolocationOptions
-   * @returns rxjs.Observable<GeolocationResult>
+   * @returns Event<GeolocationResult>
    */
-  public static observe(options?: GeolocationOptions): Observable<GeolocationResult> {
-    return new Observable<GeolocationResult>((observer) => {
+  public static observe(options?: GeolocationOptions): Event<GeolocationResult|Error> {
+    return new Event<GeolocationResult|Error>((emit) => {
       if (this.verbose) console.log(`ReactNativeMoGeolocation.observe.start options=${JSON.stringify(options)}`);
-      const item = { observer: observer, options: options || {} };
+      const item = { emit: emit, options: options || {} };
       this.observers.push(item);
       this.update();
       return () => {
