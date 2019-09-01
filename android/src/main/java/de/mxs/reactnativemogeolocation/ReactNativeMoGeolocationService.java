@@ -37,9 +37,15 @@ public final class ReactNativeMoGeolocationService extends Service {
         builder.setCategory(NotificationCompat.CATEGORY_SERVICE);
         builder.setPriority(NotificationCompat.PRIORITY_MIN);
         builder.setSmallIcon(getApplicationContext().getResources().getIdentifier("ic_launcher", "mipmap", getApplicationContext().getPackageName()));
-        Intent intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(pendingIntent);
+        try {
+            Intent intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
+//            Intent intent = new Intent(getApplicationContext(), Class.forName(launchIntent.getComponent().getClassName()));
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(pendingIntent);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         startForeground(100, builder.build());
     }
 
