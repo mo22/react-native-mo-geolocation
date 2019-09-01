@@ -15,6 +15,12 @@ const AppNavigator = createStackNavigator({
       title: 'GpsInfo',
     },
   },
+  Map: {
+    screen: require('./Map').default,
+    navigationOptions: {
+      title: 'Map',
+    },
+  },
 });
 
 const AppContainer = createAppContainer(AppNavigator);
