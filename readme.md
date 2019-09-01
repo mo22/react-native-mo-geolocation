@@ -34,8 +34,11 @@ return (
   showing a permanent notification. Use mipmaps/ic_background to change the
   icon. The text and behaviour is otherwise not customizable by android.
 
+- For iOS you need to pass indicateBackground: true to prevent the app from
+  getting terminated.
 
 ## TODO
 - [ ] docs
 - [ ] android check permission status unknown / PermissionsAndroid.RESULTS
 - [ ] fallback to navigator.geolocation api?
+- [ ] example app: keep GpsInfo page loaded?

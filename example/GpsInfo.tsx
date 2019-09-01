@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { NavigationActions, NavigationInjectedProps } from 'react-navigation';
 import { Geolocation, GeolocationResult, GeolocationPermissionStatus, GeolocationAccuracy } from 'react-native-mo-geolocation';
@@ -14,6 +14,14 @@ Geolocation.setVerbose(true);
 
 export const history: GeolocationResult[] = [];
 
+export const state: GeolocationPageState = {
+  background: false,
+  indicateBackground: false,
+  accuracy: GeolocationAccuracy.BEST,
+};
+
+export let subscription: Releaseable|undefined;
+
 export interface GeolocationPageState {
   error?: Error|string;
   position?: GeolocationResult;
@@ -21,6 +29,7 @@ export interface GeolocationPageState {
   background: boolean;
   indicateBackground: boolean;
   accuracy: GeolocationAccuracy;
+  home?: GeolocationResult;
 }
 
 export default class GpsTest extends React.PureComponent<NavigationInjectedProps> {
@@ -30,14 +39,17 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
     accuracy: GeolocationAccuracy.BEST,
   };
 
-  private readonly home = {
-    latitude: 51.145878,
-    longitude: 6.703513,
-  };
-
   private subscription?: Releaseable;
 
+  public constructor(props: NavigationInjectedProps) {
+    super(props);
+    Object.assign(this.state, state);
+    this.subscription = subscription;
+  }
+
   public componentWillUnmount() {
+    subscription = this.subscription;
+    Object.assign(state, this.state);
     if (this.subscription) {
       this.subscription.release();
       this.subscription = undefined;
@@ -50,6 +62,7 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
 
         {this.state.position && (
           <View style={{ marginTop: 10 }}>
+            <Text>Position:</Text>
             <ListItem
               title="time"
               rightTitle={new Date(this.state.position.time).toISOString()}
@@ -96,28 +109,41 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
                 rightTitle={`${this.state.position.speed.toFixed(6)}`}
               />
             )}
-            {this.state.position.latitude !== undefined && (
-              <ListItem
-                title="distance / heading"
-                rightTitle={
-                  Geolocation.getDistance(this.home, this.state.position).toFixed(0) + 'm ' +
-                  Geolocation.getBearing(this.home, this.state.position).toFixed(0) + 'deg'
-                }
-              />
-            )}
           </View>
         )}
 
         {this.state.error && (
           <View style={{ marginTop: 10 }}>
             <ListItem
+              containerStyle={{ backgroundColor: 'red' }}
               title="error"
               rightTitle={`${this.state.error}`}
             />
           </View>
         )}
 
+        {this.state.position && this.state.position.latitude !== undefined && (
+          <View style={{ marginTop: 10 }}>
+            <Text>Home:</Text>
+            <ListItem
+              title="distance / heading"
+              onPress={() => {
+                this.setState({ home: this.state.position });
+              }}
+              rightTitle={
+                this.state.home ? (
+                  Geolocation.getDistance(this.state.home, this.state.position).toFixed(0) + 'm ' +
+                  Geolocation.getBearing(this.state.home, this.state.position).toFixed(0) + 'deg'
+                ) : (
+                  'click to set home'
+                )
+              }
+            />
+          </View>
+        )}
+
         <View style={{ marginTop: 10 }}>
+          <Text>Permissions:</Text>
           <ListItem
             title="permission"
             rightTitle={`${this.state.permission}`}
@@ -142,6 +168,7 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
         </View>
 
         <View style={{ marginTop: 10 }}>
+          <Text>Settings:</Text>
           <ListItem
             title="background"
             switch={{
@@ -165,23 +192,10 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
                 this.setState({ accuracy: GeolocationAccuracy[keysOf(GeolocationAccuracy)[selectedIndex]] });
               },
             }}
-
-            // onPress={() => {
-            //   const options = enumKeys(GeolocationAccuracy).sort((a, b) => GeolocationAccuracy[a] - GeolocationAccuracy[b]);
-            //   const item = this.props.portal.show(
-            //     <ActionSheet
-            //       options={options}
-            //       resolve={(val) => {
-            //         item.remove();
-            //         if (val) {
-            //           this.setState({ accuracy: GeolocationAccuracy[val as any] as any });
-            //         }
-            //       }}
-            //     />
-            //   );
-            // }}
           />
+        </View>
 
+        <View style={{ marginTop: 10 }}>
           {!this.subscription && (
             <ListItem
               title="start"
@@ -215,6 +229,20 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
               }}
             />
           )}
+          <ListItem
+            title="get once"
+            onPress={async () => {
+              this.setState({ error: undefined });
+              try {
+                const rs = await Geolocation.get({
+                  accuracy: this.state.accuracy,
+                });
+                this.setState({ position: rs });
+              } catch (e) {
+                this.setState({ error: e });
+              }
+            }}
+          />
         </View>
 
         <View style={{ marginTop: 10 }}>
