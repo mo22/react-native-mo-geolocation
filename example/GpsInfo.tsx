@@ -158,14 +158,10 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
           />
           <ListItem
             title="accuracy"
-            // rightTitle={GeolocationAccuracy[this.state.accuracy]}
             buttonGroup={{
-              selectedIndex: 0,
+              selectedIndex: keysOf(GeolocationAccuracy).map((i) => GeolocationAccuracy[i]).indexOf(this.state.accuracy),
               buttons: keysOf(GeolocationAccuracy),
               onPress: (selectedIndex) => {
-                console.log('A', selectedIndex, keysOf(GeolocationAccuracy)[selectedIndex]);
-                console.log('B', GeolocationAccuracy[keysOf(GeolocationAccuracy)[selectedIndex]]);
-                console.log('C', keysOf(GeolocationAccuracy));
                 this.setState({ accuracy: GeolocationAccuracy[keysOf(GeolocationAccuracy)[selectedIndex]] });
               },
             }}
