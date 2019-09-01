@@ -1,32 +1,31 @@
 # react-native-mo-geolocation
 
-TODO
+Geolocation and Background-Geolocation API
 
 ## Usage
 
 ```ts
-import { Orientation, OrientationConsumer, OrientationLock } from 'react-native-mo-orientation';
+import { Geolocation, GeolocationAccuracy, GeolocationPermissionStatus } from 'react-native-mo-geolocation';
 
-console.log(Orientation.interfaceOrientation.value);
+if (await Geolocation.requestPermissions({ background: true }) === GeolocationPermissionStatus.DENIED) {
+  Geolocation.showSettings();
+}
 
-const sub = Orientation.interfaceOrientation.subscribe((orientation) => {
+const location = await Geolocation.get({ accuracy: GeolocationAccuracy.BEST });
+
+const sub = Geolocation.observe({
+  background: true,
+  indicateBackground: true,
+  accuracy: GeolocationAccuracy.BEST,
+}).subscribe((pos) => {
+  if (pos instanceof Error) {
+    console.log('we had an error!');
+  } else {
+    console.log('new position', pos);
+  }
 });
 // ...
-sub.release();
-
-todo
-return (
-  <OrientationLock allowed="portrait" />
-  <OrientationLock allowed="any" />
-);
-
-return (
-  <OrientationConsumer>
-    {(orientation) => (
-      <SomeObject orientation={orientation} />
-    )}
-  </OrientationConsumer>
-)
+sub.remove();
 ```
 
 ## Notes
@@ -36,9 +35,3 @@ return (
 
 - For iOS you need to pass indicateBackground: true to prevent the app from
   getting terminated.
-
-## TODO
-- [ ] docs
-- [x] android check permission status unknown / PermissionsAndroid.RESULTS
-- [x] fallback to navigator.geolocation api?
-- [x] example app: keep GpsInfo page loaded?

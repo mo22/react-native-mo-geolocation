@@ -82,7 +82,14 @@ export class GeolocationError extends Error {
  * Geolocation class
  */
 export class Geolocation {
+  /**
+   * native ios functions. use with caution
+   */
   public static readonly ios = ios;
+
+  /**
+   * native android functions. use with caution
+   */
   public static readonly android = android;
 
   private static lastResult?: GeolocationResult;
@@ -255,7 +262,6 @@ export class Geolocation {
 
   /**
    * get permissions
-   * @TODO: unavailable?/disabled?
    */
   public static async getPermissionStatus(args: { background?: boolean } = {}): Promise<GeolocationPermissionStatus> {
     if (ios.Module) {
@@ -281,7 +287,6 @@ export class Geolocation {
 
   /**
    * request permissions
-   * @TODO: unavailable?/disabled?
    */
   public static async requestPermissions(args: { background?: boolean } = {}): Promise<GeolocationPermissionStatus> {
     if (ios.Module) {

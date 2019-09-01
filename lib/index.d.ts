@@ -65,7 +65,13 @@ export declare class GeolocationError extends Error {
  * Geolocation class
  */
 export declare class Geolocation {
+    /**
+     * native ios functions. use with caution
+     */
     static readonly ios: typeof ios;
+    /**
+     * native android functions. use with caution
+     */
     static readonly android: typeof android;
     private static lastResult?;
     private static observers;
@@ -77,14 +83,12 @@ export declare class Geolocation {
     private static update;
     /**
      * get permissions
-     * @TODO: unavailable?/disabled?
      */
     static getPermissionStatus(args?: {
         background?: boolean;
     }): Promise<GeolocationPermissionStatus>;
     /**
      * request permissions
-     * @TODO: unavailable?/disabled?
      */
     static requestPermissions(args?: {
         background?: boolean;
