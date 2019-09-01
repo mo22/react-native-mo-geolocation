@@ -5349,10 +5349,10 @@ react-native-maps@^0.25.0:
   resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.25.0.tgz#81bc51eb50e33811a9e1c345cc48869413ead67d"
   integrity sha512-PFJuW1pt+HnnnN0m0OGk29RSvICFVkK/DScX6cUk0SuCSN2DAHx0y6y57lZyYXcYqU4J4usNpfxgp/ccjASDiw==
 
-react-native-mo-geolocation@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-mo-geolocation/-/react-native-mo-geolocation-0.0.1.tgz#9f9294c2db411f47321e918aea6022d2d9b05ed6"
-  integrity sha512-JFcpI2GmuoVHdPMOkHOCkYiEFk7/zPF2rldLuSQ2DODf7rxR3rFhXdhL5XmVPLoCI0ejbkY3DhARqun65IWbsg==
+react-native-mo-geolocation@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-mo-geolocation/-/react-native-mo-geolocation-0.0.2.tgz#635b74d1da2855b3ee2d113b2e51584b2df6201a"
+  integrity sha512-VQ7fxeKFN/N3FudXyxthet5jV9cedwlXqiV3Vb6eaDfxIAlPLYRfn29pQZDzypOtN7gAiVEAiRxIvUHryZCnMQ==
   dependencies:
     mo-core "^0.1.1"
 
