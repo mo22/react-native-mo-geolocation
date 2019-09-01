@@ -1,4 +1,4 @@
-import { NativeModules, NativeEventEmitter, EmitterSubscription, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, EmitterSubscription } from 'react-native';
 
 export enum Priority {
   PRIORITY_BALANCED_POWER_ACCURACY = 102,

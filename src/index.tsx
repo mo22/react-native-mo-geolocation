@@ -1,3 +1,6 @@
+// doc strings
+// debugging/verbose logging option?
+
 import { Platform, PermissionsAndroid, EmitterSubscription } from 'react-native';
 import { Observable, Subscriber } from 'rxjs';
 import * as ios from './ios';
@@ -81,9 +84,9 @@ export class Geolocation {
 
   public static setVerbose(verbose: boolean) {
     this.verbose = verbose;
-    if (ios.Module) {
+    if (Platform.OS === 'ios') {
       ios.Module.setVerbose(verbose);
-    } else if (android.Module) {
+    } else if (Platform.OS === 'android') {
       android.Module.setVerbose(verbose);
     }
   }
@@ -100,10 +103,10 @@ export class Geolocation {
 
       await this.requestPermissions({ background: background });
 
-      if (ios.Module) {
+      if (Platform.OS === 'ios') {
 
         if (!this.subscription) {
-          this.subscription = ios.Events!.addListener('ReactNativeMoGeolocation', (rs) => {
+          this.subscription = ios.Events.addListener('ReactNativeMoGeolocation', (rs) => {
             if (this.verbose) console.log(`ReactNativeMoGeolocation.event`, rs);
             if (rs.type === 'didFailWithError') {
               const error = new GeolocationError(rs.error);
@@ -149,10 +152,10 @@ export class Geolocation {
         ios.Module.setConfig(config);
         this.currentConfig = config;
 
-      } else if (android.Module) {
+      } else if (Platform.OS === 'android') {
 
         if (!this.subscription) {
-          this.subscription = android.Events!.addListener('ReactNativeMoGeolocation', (rs) => {
+          this.subscription = android.Events.addListener('ReactNativeMoGeolocation', (rs) => {
             if (this.verbose) console.log(`ReactNativeMoGeolocation.event`, rs);
             if (rs.type === 'onLocationResult') {
               const event: GeolocationResult = {
@@ -207,7 +210,7 @@ export class Geolocation {
    * @TODO: unavailable?/disabled?
    */
   public static async getPermissionStatus(args: { background?: boolean } = {}): Promise<GeolocationPermissionStatus> {
-    if (ios.Module) {
+    if (Platform.OS === 'ios') {
       const status = await ios.Module.getStatus();
       if (status.authorizationStatus === ios.AuthorizationStatus.Denied) {
         return GeolocationPermissionStatus.DENIED;
@@ -233,14 +236,14 @@ export class Geolocation {
    * @TODO: unavailable?/disabled?
    */
   public static async requestPermissions(args: { background?: boolean } = {}): Promise<GeolocationPermissionStatus> {
-    if (ios.Module) {
+    if (Platform.OS === 'ios') {
       const status = await ios.Module.getStatus();
       if (args.background && status.backgroundModes.indexOf('location') < 0) {
         throw new GeolocationError('missing location background mode in capabilities');
       }
       const requestAuthorization = async (args: { always: boolean }): Promise<GeolocationPermissionStatus> => {
         const res = new Promise<GeolocationPermissionStatus>((resolve) => {
-          let sub: EmitterSubscription|undefined = ios.Events!.addListener('ReactNativeMoGeolocation', (rs) => {
+          let sub: EmitterSubscription|undefined = ios.Events.addListener('ReactNativeMoGeolocation', (rs) => {
             if (rs.type !== 'didChangeAuthorizationStatus') return;
             if (rs.status === ios.AuthorizationStatus.Denied) {
               resolve(GeolocationPermissionStatus.DENIED);
@@ -267,7 +270,7 @@ export class Geolocation {
             }
           });
         });
-        ios.Module!.requestAuthorization(args);
+        ios.Module.requestAuthorization(args);
         return res;
       };
       if (status.authorizationStatus === ios.AuthorizationStatus.Denied) {
@@ -280,7 +283,7 @@ export class Geolocation {
         return GeolocationPermissionStatus.GRANTED;
       }
 
-    } else if (android.Module) {
+    } else if (Platform.OS === 'android') {
       const res = await PermissionsAndroid.request('android.permission.ACCESS_FINE_LOCATION');
       if (res === 'granted') return GeolocationPermissionStatus.GRANTED;
       return GeolocationPermissionStatus.DENIED;
@@ -294,9 +297,9 @@ export class Geolocation {
    * @TODO: unavailable?/disabled?
    */
   public static showSettings() {
-    if (ios.Module) {
+    if (Platform.OS === 'ios') {
       ios.Module.openSettings();
-    } else if (android.Module) {
+    } else if (Platform.OS === 'android') {
       android.Module.openSettings();
     }
   }

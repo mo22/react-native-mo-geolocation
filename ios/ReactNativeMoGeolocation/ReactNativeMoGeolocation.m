@@ -1,8 +1,7 @@
-#import <UIKit/UIKit.h>
+#import <React/RCTEventEmitter.h>
 #import <CoreLocation/CoreLocation.h>
-#import "ReactNativeMoGeolocation.h"
 
-@interface ReactNativeMoGeolocation () <CLLocationManagerDelegate> {
+@interface ReactNativeMoGeolocation : RCTEventEmitter <CLLocationManagerDelegate> {
     BOOL _verbose;
 }
 @property CLLocationManager* locationManager;
@@ -17,9 +16,9 @@ RCT_EXPORT_MODULE()
     return @[ @"ReactNativeMoGeolocation" ];
 }
 
-- (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-}
+//- (dispatch_queue_t)methodQueue {
+//    return dispatch_get_main_queue();
+//}
 
 - (BOOL)verbose {
     return _verbose;
