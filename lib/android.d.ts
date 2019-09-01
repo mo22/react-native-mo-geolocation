@@ -1,3 +1,4 @@
+import { EmitterSubscription } from 'react-native';
 export declare enum Priority {
     PRIORITY_BALANCED_POWER_ACCURACY = 102,
     PRIORITY_HIGH_ACCURACY = 100,
@@ -38,5 +39,5 @@ export declare type Event = {
 };
 export declare const Module: Module | undefined;
 export declare const Events: {
-    addListener(eventType: "ReactNativeMoGeolocation", listener: (event: Event) => void): any;
+    addListener(eventType: "ReactNativeMoGeolocation", listener: (event: Event) => void): EmitterSubscription;
 } | undefined;

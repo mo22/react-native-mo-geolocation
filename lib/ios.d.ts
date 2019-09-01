@@ -1,3 +1,4 @@
+import { EmitterSubscription } from 'react-native';
 export declare enum AuthorizationStatus {
     NotDetermined = 0,
     Restricted = 1,
@@ -56,5 +57,5 @@ export declare type Event = {
 };
 export declare const Module: Module | undefined;
 export declare const Events: {
-    addListener(eventType: "ReactNativeMoGeolocation", listener: (event: Event) => void): any;
+    addListener(eventType: "ReactNativeMoGeolocation", listener: (event: Event) => void): EmitterSubscription;
 } | undefined;
