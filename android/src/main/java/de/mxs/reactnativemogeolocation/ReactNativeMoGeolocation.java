@@ -109,20 +109,12 @@ public final class ReactNativeMoGeolocation extends ReactContextBaseJavaModule {
         if (fusedLocationClient == null) {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(getReactApplicationContext());
         }
-        fusedLocationClient.getLocationAvailability().addOnSuccessListener(new OnSuccessListener<LocationAvailability>() {
-            @Override
-            public void onSuccess(LocationAvailability locationAvailability) {
-                WritableMap args = Arguments.createMap();
-                args.putBoolean("locationAvailable", locationAvailability.isLocationAvailable());
-                if (verbose) Log.i("MoGeolocation", "getStatus -> " + args);
-                promise.resolve(args);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                promise.reject(e);
-            }
-        });
+        fusedLocationClient.getLocationAvailability().addOnSuccessListener(locationAvailability -> {
+            WritableMap args = Arguments.createMap();
+            args.putBoolean("locationAvailable", locationAvailability.isLocationAvailable());
+            if (verbose) Log.i("MoGeolocation", "getStatus -> " + args);
+            promise.resolve(args);
+        }).addOnFailureListener(promise::reject);
     }
 
     @SuppressWarnings("unused")
