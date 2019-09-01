@@ -40,11 +40,16 @@ public final class ReactNativeMoGeolocationService extends Service {
         builder.setPriority(NotificationCompat.PRIORITY_MIN);
         builder.setSmallIcon(getApplicationContext().getResources().getIdentifier("ic_launcher", "mipmap", getApplicationContext().getPackageName()));
         try {
-            Intent launchIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
-            Log.i("XXX", "launchIntent flags " + launchIntent.getFlags());
-            Intent intent = new Intent(getApplicationContext(), Class.forName(launchIntent.getComponent().getClassName()));
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            Log.i("XXX", "intent flags " + intent.getFlags());
+//            09-01 19:33:25.160 12594 12594 I XXX     : launchIntent flags 268435456
+//            09-01 19:33:25.160 12594 12594 I XXX     : intent flags 536870912
+//            Intent launchIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
+//            Log.i("XXX", "launchIntent flags " + launchIntent.getFlags());
+//            Intent intent = new Intent(getApplicationContext(), Class.forName(launchIntent.getComponent().getClassName()));
+//            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//            Log.i("XXX", "intent flags " + intent.getFlags());
+            Intent intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
+            if (intent == null) throw new RuntimeException("getLaunchIntentForPackage == null");
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentIntent(pendingIntent);
         } catch (Exception e) {
