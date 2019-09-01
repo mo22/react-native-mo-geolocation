@@ -233,6 +233,7 @@ export class Geolocation {
 
     } else if (android.Module) {
       const res = await PermissionsAndroid.check('android.permission.ACCESS_FINE_LOCATION');
+      console.log('XXX', res);
       if (res) return GeolocationPermissionStatus.GRANTED;
       return GeolocationPermissionStatus.DENIED;
 
