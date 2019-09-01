@@ -165,6 +165,7 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
               onPress: (selectedIndex) => {
                 console.log('A', selectedIndex, keysOf(GeolocationAccuracy)[selectedIndex]);
                 console.log('B', GeolocationAccuracy[keysOf(GeolocationAccuracy)[selectedIndex]]);
+                console.log('C', keysOf(GeolocationAccuracy));
                 this.setState({ accuracy: GeolocationAccuracy[keysOf(GeolocationAccuracy)[selectedIndex]] });
               },
             }}
