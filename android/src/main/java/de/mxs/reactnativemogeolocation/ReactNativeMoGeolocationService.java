@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
@@ -38,9 +40,11 @@ public final class ReactNativeMoGeolocationService extends Service {
         builder.setPriority(NotificationCompat.PRIORITY_MIN);
         builder.setSmallIcon(getApplicationContext().getResources().getIdentifier("ic_launcher", "mipmap", getApplicationContext().getPackageName()));
         try {
-            Intent intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
-//            Intent intent = new Intent(getApplicationContext(), Class.forName(launchIntent.getComponent().getClassName()));
+            Intent launchIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
+            Log.i("XXX", "launchIntent flags " + launchIntent.getFlags());
+            Intent intent = new Intent(getApplicationContext(), Class.forName(launchIntent.getComponent().getClassName()));
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            Log.i("XXX", "intent flags " + intent.getFlags());
             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentIntent(pendingIntent);
         } catch (Exception e) {

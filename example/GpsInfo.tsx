@@ -221,7 +221,7 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
           <ListItem
             title="map"
             onPress={() => {
-              this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'GeolocationMapPage', params: { route: history } }));
+              this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'Map', params: { route: history } }));
             }}
           />
         </View>

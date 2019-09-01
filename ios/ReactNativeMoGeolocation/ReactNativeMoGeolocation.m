@@ -128,4 +128,12 @@ RCT_EXPORT_METHOD(setConfig:(NSDictionary*)args) {
     }];
 }
 
+- (void)stopObserving {
+    if (self.locationManager) {
+        [self.locationManager stopMonitoringSignificantLocationChanges];
+        [self.locationManager stopUpdatingLocation];
+        self.locationManager = nil;
+    }
+}
+
 @end
