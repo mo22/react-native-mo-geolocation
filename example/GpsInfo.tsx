@@ -3,11 +3,12 @@ import { ScrollView, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { NavigationActions, NavigationInjectedProps } from 'react-navigation';
 import { Geolocation, GeolocationResult, GeolocationPermissionStatus, GeolocationAccuracy } from 'react-native-mo-geolocation';
+import { Releaseable } from 'mo-core';
 
-// function keysOf<T extends {}>(obj: T): (keyof T)[] {
-//   const objany = obj as any;
-//   return Object.keys(obj).filter((i) => typeof objany[objany[i]] !== 'number') as any;
-// }
+function keysOf<T extends {}>(obj: T): (keyof T)[] {
+  const objany = obj as any;
+  return Object.keys(obj).filter((i) => typeof objany[objany[i]] !== 'number') as any;
+}
 
 Geolocation.setVerbose(true);
 
@@ -20,14 +21,12 @@ export interface GeolocationPageState {
   background: boolean;
   indicateBackground: boolean;
   accuracy: GeolocationAccuracy;
-  withPush: boolean;
 }
 
 export default class GpsTest extends React.PureComponent<NavigationInjectedProps> {
   public state: GeolocationPageState = {
     background: false,
     indicateBackground: false,
-    withPush: false,
     accuracy: GeolocationAccuracy.BEST,
   };
 
@@ -36,13 +35,13 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
     longitude: 6.703513,
   };
 
-  // private subscription: Subscription|undefined;
+  private subscription?: Releaseable;
 
   public componentWillUnmount() {
-    // if (this.subscription) {
-    //   this.subscription.unsubscribe();
-    //   this.subscription = undefined;
-    // }
+    if (this.subscription) {
+      this.subscription.release();
+      this.subscription = undefined;
+    }
   }
 
   public render() {
@@ -158,15 +157,18 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
             }}
           />
           <ListItem
-            title="with push"
-            switch={{
-              value: this.state.withPush,
-              onValueChange: (value) => this.setState({ withPush: value }),
-            }}
-          />
-          <ListItem
             title="accuracy"
-            rightTitle={GeolocationAccuracy[this.state.accuracy]}
+            // rightTitle={GeolocationAccuracy[this.state.accuracy]}
+            buttonGroup={{
+              selectedIndex: 0,
+              buttons: keysOf(GeolocationAccuracy),
+              onPress: (selectedIndex) => {
+                console.log('A', selectedIndex, keysOf(GeolocationAccuracy)[selectedIndex]);
+                console.log('B', GeolocationAccuracy[keysOf(GeolocationAccuracy)[selectedIndex]]);
+                this.setState({ accuracy: GeolocationAccuracy[keysOf(GeolocationAccuracy)[selectedIndex]] });
+              },
+            }}
+
             // onPress={() => {
             //   const options = enumKeys(GeolocationAccuracy).sort((a, b) => GeolocationAccuracy[a] - GeolocationAccuracy[b]);
             //   const item = this.props.portal.show(
@@ -182,7 +184,7 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
             //   );
             // }}
           />
-{/*
+
           {!this.subscription && (
             <ListItem
               title="start"
@@ -193,26 +195,13 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
                   accuracy: this.state.accuracy,
                   background: this.state.background,
                   indicateBackground: this.state.indicateBackground,
-                }).subscribe({
-                  next: (rs) => {
+                }).subscribe((rs) => {
+                  if (rs instanceof Error) {
+                    this.setState({ error: rs });
+                  } else {
                     history.push(rs);
                     this.setState({ position: rs });
-                    if (this.state.withPush) {
-                      PushNotification.showNotification({
-                        title: 'geolocation',
-                        body: rs.latitude.toFixed(4) + ' ' + rs.longitude.toFixed(4) + ' ' + rs.altitude.toFixed(1) + ' ' + rs.locationAccuracy.toFixed(0),
-                      });
-                    }
-                  },
-                  error: (e) => {
-                    this.setState({ error: e });
-                    if (this.state.withPush) {
-                      PushNotification.showNotification({
-                        title: 'geolocation',
-                        body: String(e),
-                      });
-                    }
-                  },
+                  }
                 });
               }}
             />
@@ -222,14 +211,13 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
               title="stop"
               onPress={() => {
                 if (this.subscription) {
-                  this.subscription.unsubscribe();
+                  this.subscription.release();
                   this.subscription = undefined;
                 }
                 this.setState({ error: undefined, position: undefined });
               }}
             />
           )}
-          */}
         </View>
 
         <View style={{ marginTop: 10 }}>
