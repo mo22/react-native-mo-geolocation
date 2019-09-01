@@ -61,6 +61,6 @@ export type Event = {
 
 export const Module = (Platform.OS === 'ios') ? NativeModules.ReactNativeMoGeolocation as Module : undefined;
 
-export const Events = Module ? new NativeEventEmitter(NativeModules.ReactNativeMoOrientation) as {
+export const Events = Module ? new NativeEventEmitter(NativeModules.ReactNativeMoGeolocation) as {
   addListener(eventType: 'ReactNativeMoGeolocation', listener: (event: Event) => void): EmitterSubscription;
 } : undefined;
