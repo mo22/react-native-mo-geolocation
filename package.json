@@ -1,0 +1,38 @@
+{
+  "name": "react-native-mo-geolocation",
+  "version": "0.0.1",
+  "description": "react-native geolocation api with background support",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "package.json",
+    "src/*",
+    "lib/*",
+    "android",
+    "ios/**/*.{h,m,pbxproj}",
+    "*.podspec"
+  ],
+  "devDependencies": {
+    "@types/react-native": "^0.60.9",
+    "react": "^16.9.0",
+    "react-native": "^0.60.5",
+    "typescript": "^3.6.2"
+  },
+  "dependencies": {
+    "mo-core": "^0.1.1"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo22/react-native-mo-geolocation.git"
+  },
+  "author": "Moritz Moeller <mm@mxs.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mo22/react-native-mo-geolocation/issues"
+  },
+  "homepage": "https://github.com/mo22/react-native-mo-geolocation#readme"
+}
