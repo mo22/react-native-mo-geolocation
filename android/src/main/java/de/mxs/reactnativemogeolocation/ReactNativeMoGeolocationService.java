@@ -9,10 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import java.util.Objects;
 
 public final class ReactNativeMoGeolocationService extends Service {
 
@@ -38,23 +39,22 @@ public final class ReactNativeMoGeolocationService extends Service {
         builder.setOngoing(false);
         builder.setCategory(NotificationCompat.CATEGORY_SERVICE);
         builder.setPriority(NotificationCompat.PRIORITY_MIN);
-        builder.setSmallIcon(getApplicationContext().getResources().getIdentifier("ic_launcher", "mipmap", getApplicationContext().getPackageName()));
-        try {
-//            09-01 19:33:25.160 12594 12594 I XXX     : launchIntent flags 268435456
-//            09-01 19:33:25.160 12594 12594 I XXX     : intent flags 536870912
-//            Intent launchIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
-//            Log.i("XXX", "launchIntent flags " + launchIntent.getFlags());
-//            Intent intent = new Intent(getApplicationContext(), Class.forName(launchIntent.getComponent().getClassName()));
-//            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//            Log.i("XXX", "intent flags " + intent.getFlags());
-            Intent intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
-            if (intent == null) throw new RuntimeException("getLaunchIntentForPackage == null");
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            builder.setContentIntent(pendingIntent);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        int icon = getApplicationContext().getResources().getIdentifier("ic_background", "mipmap", getApplicationContext().getPackageName());
+        if (icon == 0) {
+            icon = getApplicationContext().getResources().getIdentifier("ic_launcher", "mipmap", getApplicationContext().getPackageName());
         }
+        builder.setSmallIcon(icon);
+        Intent launchIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
+        if (launchIntent == null) throw new RuntimeException("getLaunchIntentForPackage == null");
+        Intent intent;
+        try {
+            intent = new Intent(getApplicationContext(), Class.forName(Objects.requireNonNull(launchIntent.getComponent()).getClassName()));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Class.forName of getLaunchIntentForPackage not found");
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
         startForeground(100, builder.build());
     }
 
