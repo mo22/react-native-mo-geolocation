@@ -1,8 +1,7 @@
-#import <UIKit/UIKit.h>
+#import <React/RCTEventEmitter.h>
 #import <CoreLocation/CoreLocation.h>
-#import "ReactNativeMoGeolocation.h"
 
-@interface ReactNativeMoGeolocation () <CLLocationManagerDelegate> {
+@interface ReactNativeMoGeolocation : RCTEventEmitter <CLLocationManagerDelegate> {
     BOOL _verbose;
 }
 @property CLLocationManager* locationManager;
@@ -59,9 +58,11 @@ RCT_EXPORT_METHOD(requestAuthorization:(NSDictionary*)args) {
 
 RCT_EXPORT_METHOD(openSettings) {
     if (self.verbose) NSLog(@"ReactNativeMoGeolocation.openSettings");
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
-//    NSURL* tmp = [NSURL URLWithString:@"App-Prefs:root=Privacy&path=LOCATION"];
-//    [[UIApplication sharedApplication] openURL:tmp options:@{} completionHandler:nil];
+    if (@available(iOS 10.0, *)) {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+    } else {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+    }
 }
 
 RCT_EXPORT_METHOD(setConfig:(NSDictionary*)args) {
