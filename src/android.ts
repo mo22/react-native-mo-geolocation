@@ -1,4 +1,4 @@
-import { NativeModules, NativeEventEmitter, EmitterSubscription, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, EmitterSubscription } from 'react-native';
 
 export enum Priority {
   PRIORITY_BALANCED_POWER_ACCURACY = 102,
@@ -42,6 +42,6 @@ export type Event = {
 
 export const Module = (Platform.OS === 'android') ? NativeModules.ReactNativeMoGeolocation as Module : undefined;
 
-export const Events = Module ? new NativeEventEmitter(NativeModules.ReactNativeMoGeolocation) as {
+export const Events = Module ? new NativeEventEmitter(NativeModules.ReactNativeMoOrientation) as {
   addListener(eventType: 'ReactNativeMoGeolocation', listener: (event: Event) => void): EmitterSubscription;
 } : undefined;

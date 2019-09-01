@@ -20,7 +20,7 @@ public final class ReactNativeMoGeolocationPackage implements ReactPackage {
 
     @Override
     public @Nonnull List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
-        return Collections.singletonList(new ReactNativeMoGeolocation(reactContext));
+        return Collections.singletonList((NativeModule) new ReactNativeMoGeolocation(reactContext));
     }
 
 }

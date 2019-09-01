@@ -6,6 +6,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import android.util.Log;
 
@@ -24,6 +25,8 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import javax.annotation.Nonnull;
 
@@ -106,12 +109,20 @@ public final class ReactNativeMoGeolocation extends ReactContextBaseJavaModule {
         if (fusedLocationClient == null) {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(getReactApplicationContext());
         }
-        fusedLocationClient.getLocationAvailability().addOnSuccessListener(locationAvailability -> {
-            WritableMap args = Arguments.createMap();
-            args.putBoolean("locationAvailable", locationAvailability.isLocationAvailable());
-            if (verbose) Log.i("MoGeolocation", "getStatus -> " + args);
-            promise.resolve(args);
-        }).addOnFailureListener(promise::reject);
+        fusedLocationClient.getLocationAvailability().addOnSuccessListener(new OnSuccessListener<LocationAvailability>() {
+            @Override
+            public void onSuccess(LocationAvailability locationAvailability) {
+                WritableMap args = Arguments.createMap();
+                args.putBoolean("locationAvailable", locationAvailability.isLocationAvailable());
+                if (verbose) Log.i("MoGeolocation", "getStatus -> " + args);
+                promise.resolve(args);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                promise.reject(e);
+            }
+        });
     }
 
     @SuppressWarnings("unused")

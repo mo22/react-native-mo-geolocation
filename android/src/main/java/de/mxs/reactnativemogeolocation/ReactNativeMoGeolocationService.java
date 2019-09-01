@@ -3,6 +3,7 @@ package de.mxs.reactnativemogeolocation;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +37,12 @@ public final class ReactNativeMoGeolocationService extends Service {
         builder.setCategory(NotificationCompat.CATEGORY_SERVICE);
         builder.setPriority(NotificationCompat.PRIORITY_MIN);
         builder.setSmallIcon(getApplicationContext().getResources().getIdentifier("ic_launcher", "mipmap", getApplicationContext().getPackageName()));
+
+        Intent intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        builder.setContentIntent(pendingIntent);
+
         startForeground(100, builder.build());
     }
 
