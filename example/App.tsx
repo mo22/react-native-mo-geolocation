@@ -9,16 +9,10 @@ const AppNavigator = createStackNavigator({
       title: 'Menu',
     },
   },
-  LockedOrientation: {
-    screen: require('./LockedOrientation').default,
+  GpsInfo: {
+    screen: require('./GpsInfo').default,
     navigationOptions: {
-      title: 'LockedOrientation',
-    },
-  },
-  SelectOrientation: {
-    screen: require('./SelectOrientation').default,
-    navigationOptions: {
-      title: 'SelectOrientation',
+      title: 'GpsInfo',
     },
   },
 });
