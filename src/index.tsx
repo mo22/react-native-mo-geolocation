@@ -90,6 +90,7 @@ export class Geolocation {
   private static subscription?: EmitterSubscription;
   private static currentConfig?: ios.Config|android.Config;
   private static verbose: boolean = false;
+  private static watch?: number;
 
   public static setVerbose(verbose: boolean) {
     this.verbose = verbose;
@@ -143,7 +144,6 @@ export class Geolocation {
             }
           });
         }
-
         const config: ios.Config = {
           desiredAccuracy: active ? accuracy : 0, // 1,
           distanceFilter: active ? Math.max(1, accuracy) : 0,
@@ -157,12 +157,10 @@ export class Geolocation {
           return;
         }
         if (this.verbose) console.log('ReactNativeMoGeolocation.Geolocation.update', config);
-
         ios.Module.setConfig(config);
         this.currentConfig = config;
 
       } else if (android.Module) {
-
         if (!this.subscription) {
           this.subscription = android.Events!.addListener('ReactNativeMoGeolocation', (rs) => {
             if (this.verbose) console.log(`ReactNativeMoGeolocation.event`, rs);
@@ -187,7 +185,6 @@ export class Geolocation {
             }
           });
         }
-
         const config: android.Config = {
           priority:
             (accuracy >= 1000) ?
@@ -203,11 +200,53 @@ export class Geolocation {
           return;
         }
         if (this.verbose) console.log('ReactNativeMoGeolocation.Geolocation.update', config);
-
         android.Module.setConfig(config);
         this.currentConfig = config;
 
+      } else if (navigator.geolocation) {
+        if (this.watch !== undefined) {
+          navigator.geolocation.clearWatch(this.watch);
+          this.watch = undefined;
+        }
+        if (active) {
+          this.watch = navigator.geolocation.watchPosition(
+            (rs) => {
+              const event: GeolocationResult = {
+                time: rs.timestamp,
+                latitude: rs.coords.latitude,
+                longitude: rs.coords.longitude,
+                locationAccuracy: rs.coords.accuracy,
+                altitude: rs.coords.altitude || 0,
+                altitudeAccuracy: rs.coords.altitudeAccuracy || 100,
+                speed: rs.coords.speed || undefined,
+                course: rs.coords.heading || undefined,
+              };
+              this.lastResult = event;
+              for (const observer of this.observers) {
+                observer.emit(event);
+              }
+            },
+            (e) => {
+              const error = new GeolocationError(e.message);
+              for (const observer of this.observers) {
+                observer.emit(error);
+              }
+            },
+            {
+              timeout: 5000,
+              maximumAge: 5000,
+              enableHighAccuracy: accuracy < 10,
+              distanceFilter: accuracy,
+              useSignificantChanges: accuracy >= 1000,
+            }
+          );
+        }
+
+      } else {
+        throw new GeolocationError('no source');
+
       }
+
     } catch (e) {
       for (const i of this.observers) i.emit(e);
       throw e;

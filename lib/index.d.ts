@@ -72,6 +72,7 @@ export declare class Geolocation {
     private static subscription?;
     private static currentConfig?;
     private static verbose;
+    private static watch?;
     static setVerbose(verbose: boolean): void;
     private static update;
     /**
