@@ -1,8 +1,5 @@
-// doc strings
-// debugging/verbose logging option?
-
 import { Platform, PermissionsAndroid, EmitterSubscription } from 'react-native';
-import { Observable, Subscriber } from 'rxjs';
+import { Event } from 'mo-core';
 import * as ios from './ios';
 import * as android from './android';
 
@@ -14,23 +11,35 @@ import * as android from './android';
 export interface GeolocationResult {
   /** timestamp in milliseconds since unix epoch */
   time: number;
+  /** latitude in degrees */
   latitude: number;
+  /** longitude in degrees */
   longitude: number;
+  /** latitude/longitude accuracy in meters */
   locationAccuracy: number;
+  /** altitude in meters */
   altitude: number;
+  /** altitude accuracy in meters */
   altitudeAccuracy: number;
+  /** course in degrees true north */
   course?: number;
+  /** speed in meters per second */
   speed?: number;
 }
 
 
 
-// @TODO: doc
+/**
+ * requested accuracy
+ */
 export enum GeolocationAccuracy {
+  /** only update on cell tower change */
   SIGNIFICANT = 1000,
+  /** low */
   LOW = 100,
   MEDIUM = 10,
   HIGH = -1,
+  /** very high */
   BEST = -2,
 }
 
@@ -77,16 +86,16 @@ export class Geolocation {
   public static readonly android = android;
 
   private static lastResult?: GeolocationResult;
-  private static observers: { observer: Subscriber<GeolocationResult>; options: GeolocationOptions; }[] = [];
+  private static observers: { emit: (val: GeolocationResult|Error) => void; options: GeolocationOptions; }[] = [];
   private static subscription?: EmitterSubscription;
   private static currentConfig?: ios.Config|android.Config;
   private static verbose: boolean = false;
 
   public static setVerbose(verbose: boolean) {
     this.verbose = verbose;
-    if (Platform.OS === 'ios') {
+    if (ios.Module) {
       ios.Module.setVerbose(verbose);
-    } else if (Platform.OS === 'android') {
+    } else if (android.Module) {
       android.Module.setVerbose(verbose);
     }
   }
@@ -103,15 +112,15 @@ export class Geolocation {
 
       await this.requestPermissions({ background: background });
 
-      if (Platform.OS === 'ios') {
+      if (ios.Module) {
 
         if (!this.subscription) {
-          this.subscription = ios.Events.addListener('ReactNativeMoGeolocation', (rs) => {
+          this.subscription = ios.Events!.addListener('ReactNativeMoGeolocation', (rs) => {
             if (this.verbose) console.log(`ReactNativeMoGeolocation.event`, rs);
             if (rs.type === 'didFailWithError') {
               const error = new GeolocationError(rs.error);
               for (const observer of this.observers) {
-                observer.observer.error(error);
+                observer.emit(error);
               }
             } else if (rs.type === 'didUpdateLocations') {
               const event: GeolocationResult = {
@@ -129,7 +138,7 @@ export class Geolocation {
               };
               this.lastResult = event;
               for (const observer of this.observers) {
-                observer.observer.next(event);
+                observer.emit(event);
               }
             }
           });
@@ -152,10 +161,10 @@ export class Geolocation {
         ios.Module.setConfig(config);
         this.currentConfig = config;
 
-      } else if (Platform.OS === 'android') {
+      } else if (android.Module) {
 
         if (!this.subscription) {
-          this.subscription = android.Events.addListener('ReactNativeMoGeolocation', (rs) => {
+          this.subscription = android.Events!.addListener('ReactNativeMoGeolocation', (rs) => {
             if (this.verbose) console.log(`ReactNativeMoGeolocation.event`, rs);
             if (rs.type === 'onLocationResult') {
               const event: GeolocationResult = {
@@ -173,7 +182,7 @@ export class Geolocation {
               };
               this.lastResult = event;
               for (const observer of this.observers) {
-                observer.observer.next(event);
+                observer.emit(event);
               }
             }
           });
@@ -200,7 +209,7 @@ export class Geolocation {
 
       }
     } catch (e) {
-      for (const i of this.observers) i.observer.error(e);
+      for (const i of this.observers) i.emit(e);
       throw e;
     }
   }
@@ -210,7 +219,7 @@ export class Geolocation {
    * @TODO: unavailable?/disabled?
    */
   public static async getPermissionStatus(args: { background?: boolean } = {}): Promise<GeolocationPermissionStatus> {
-    if (Platform.OS === 'ios') {
+    if (ios.Module) {
       const status = await ios.Module.getStatus();
       if (status.authorizationStatus === ios.AuthorizationStatus.Denied) {
         return GeolocationPermissionStatus.DENIED;
@@ -222,8 +231,9 @@ export class Geolocation {
         return GeolocationPermissionStatus.GRANTED;
       }
 
-    } else if (Platform.OS === 'android') {
+    } else if (android.Module) {
       const res = await PermissionsAndroid.check('android.permission.ACCESS_FINE_LOCATION');
+      console.log('XXX', PermissionsAndroid.RESULTS);
       if (res) return GeolocationPermissionStatus.GRANTED;
       return GeolocationPermissionStatus.DENIED;
 
@@ -236,14 +246,14 @@ export class Geolocation {
    * @TODO: unavailable?/disabled?
    */
   public static async requestPermissions(args: { background?: boolean } = {}): Promise<GeolocationPermissionStatus> {
-    if (Platform.OS === 'ios') {
+    if (ios.Module) {
       const status = await ios.Module.getStatus();
       if (args.background && status.backgroundModes.indexOf('location') < 0) {
         throw new GeolocationError('missing location background mode in capabilities');
       }
       const requestAuthorization = async (args: { always: boolean }): Promise<GeolocationPermissionStatus> => {
         const res = new Promise<GeolocationPermissionStatus>((resolve) => {
-          let sub: EmitterSubscription|undefined = ios.Events.addListener('ReactNativeMoGeolocation', (rs) => {
+          let sub: EmitterSubscription|undefined = ios.Events!.addListener('ReactNativeMoGeolocation', (rs) => {
             if (rs.type !== 'didChangeAuthorizationStatus') return;
             if (rs.status === ios.AuthorizationStatus.Denied) {
               resolve(GeolocationPermissionStatus.DENIED);
@@ -270,7 +280,7 @@ export class Geolocation {
             }
           });
         });
-        ios.Module.requestAuthorization(args);
+        ios.Module!.requestAuthorization(args);
         return res;
       };
       if (status.authorizationStatus === ios.AuthorizationStatus.Denied) {
@@ -294,12 +304,11 @@ export class Geolocation {
 
   /**
    * request permissions
-   * @TODO: unavailable?/disabled?
    */
   public static showSettings() {
-    if (Platform.OS === 'ios') {
+    if (ios.Module) {
       ios.Module.openSettings();
-    } else if (Platform.OS === 'android') {
+    } else if (android.Module) {
       android.Module.openSettings();
     }
   }
@@ -316,21 +325,18 @@ export class Geolocation {
     }
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
-        subscription.unsubscribe();
+        sub.release();
         clearTimeout(timeout);
         reject(new GeolocationError('timeout'));
       }, options && options.timeout || (1000 * 15));
-      const subscription = this.observe(options).subscribe({
-        next: (value) => {
-          subscription.unsubscribe();
-          clearTimeout(timeout);
+      const sub = this.observe(options).subscribe((value) => {
+        sub.release();
+        clearTimeout(timeout);
+        if (value instanceof Error) {
+          reject(value);
+        } else {
           resolve(value);
-        },
-        error: (error) => {
-          subscription.unsubscribe();
-          clearTimeout(timeout);
-          reject(error);
-        },
+        }
       });
     });
   }
@@ -338,12 +344,12 @@ export class Geolocation {
   /**
    * start observing the location permanently
    * @param options GeolocationOptions
-   * @returns rxjs.Observable<GeolocationResult>
+   * @returns Event<GeolocationResult>
    */
-  public static observe(options?: GeolocationOptions): Observable<GeolocationResult> {
-    return new Observable<GeolocationResult>((observer) => {
+  public static observe(options?: GeolocationOptions): Event<GeolocationResult|Error> {
+    return new Event<GeolocationResult|Error>((emit) => {
       if (this.verbose) console.log(`ReactNativeMoGeolocation.observe.start options=${JSON.stringify(options)}`);
-      const item = { observer: observer, options: options || {} };
+      const item = { emit: emit, options: options || {} };
       this.observers.push(item);
       this.update();
       return () => {
