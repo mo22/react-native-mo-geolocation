@@ -30,5 +30,12 @@ return (
 ```
 
 ## Notes
+- If you are using Android background mode, a background service will run
+  showing a permanent notification. Use mipmaps/ic_background to change the
+  icon. The text and behaviour is otherwise not customizable by android.
+
 
 ## TODO
+- [ ] docs
+- [ ] android check permission status unknown / PermissionsAndroid.RESULTS
+- [ ] fallback to navigator.geolocation api?
