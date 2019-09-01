@@ -39,6 +39,6 @@ return (
 
 ## TODO
 - [ ] docs
-- [ ] android check permission status unknown / PermissionsAndroid.RESULTS
-- [ ] fallback to navigator.geolocation api?
-- [ ] example app: keep GpsInfo page loaded?
+- [x] android check permission status unknown / PermissionsAndroid.RESULTS
+- [x] fallback to navigator.geolocation api?
+- [x] example app: keep GpsInfo page loaded?
