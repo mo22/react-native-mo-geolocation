@@ -82,6 +82,10 @@ export declare class Geolocation {
     static setVerbose(verbose: boolean): void;
     private static update;
     /**
+     * open settings
+     */
+    static openSettings(): Promise<void>;
+    /**
      * get permissions
      */
     static getPermissionStatus(args?: {

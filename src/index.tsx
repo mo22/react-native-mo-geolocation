@@ -264,6 +264,17 @@ export class Geolocation {
   }
 
   /**
+   * open settings
+   */
+  public static async openSettings() {
+    if (ios.Module) {
+      ios.Module.openSettings();
+    } else if (android.Module) {
+      android.Module.openSettings();
+    }
+  }
+
+  /**
    * get permissions
    */
   public static async getPermissionStatus(args: { background?: boolean } = {}): Promise<GeolocationPermissionStatus> {

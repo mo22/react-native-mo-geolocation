@@ -166,6 +166,12 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
               this.setState({ permission: res });
             }}
           />
+          <ListItem
+            title="open settings"
+            onPress={async () => {
+              await Geolocation.openSettings();
+            }}
+          />
         </View>
 
         <View style={{ marginTop: 10 }}>
