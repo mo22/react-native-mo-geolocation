@@ -4,6 +4,7 @@ import { ListItem } from 'react-native-elements';
 import { NavigationActions, NavigationInjectedProps } from 'react-navigation';
 import { Geolocation, GeolocationResult, GeolocationPermissionStatus, GeolocationAccuracy } from 'react-native-mo-geolocation';
 import { Releaseable } from 'mo-core';
+import { Fs } from 'react-native-mo-fs';
 
 function keysOf<T extends {}>(obj: T): (keyof T)[] {
   const objany = obj as any;
@@ -199,33 +200,49 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
           {!this.subscription && (
             <ListItem
               title="start"
-              onPress={() => {
+              onPress={async () => {
                 this.setState({ error: undefined });
                 history.splice(0, history.length);
                 this.subscription = Geolocation.observe({
                   accuracy: this.state.accuracy,
                   background: this.state.background,
                   indicateBackground: this.state.indicateBackground,
-                }).subscribe((rs) => {
+                }).subscribe(async (rs) => {
                   if (rs instanceof Error) {
                     this.setState({ error: rs });
+                    await Fs.appendTextFile(
+                      Fs.paths.docs + '/gps.csv',
+                      new Date().toISOString() + ';' + 'error' + ';' + String(rs) + '\n'
+                    );
                   } else {
                     history.push(rs);
                     this.setState({ position: rs });
+                    await Fs.appendTextFile(
+                      Fs.paths.docs + '/gps.csv',
+                      new Date(rs.time).toISOString() + ';' + 'gps' + ';' + rs.latitude + ';' + rs.longitude + ';' + rs.altitude + ';' + (rs.course || '') + ';' + (rs.speed || '') + ';' + (rs.locationAccuracy || '') + ';' + (rs.altitudeAccuracy || '') + '\n'
+                    );
                   }
                 });
+                await Fs.appendTextFile(
+                  Fs.paths.docs + '/gps.csv',
+                  new Date().toISOString() + ';' + 'start' + '\n'
+                );
               }}
             />
           )}
           {this.subscription && (
             <ListItem
               title="stop"
-              onPress={() => {
+              onPress={async () => {
                 if (this.subscription) {
                   this.subscription.release();
                   this.subscription = undefined;
                 }
                 this.setState({ error: undefined, position: undefined });
+                await Fs.appendTextFile(
+                  Fs.paths.docs + '/gps.csv',
+                  new Date().toISOString() + ';' + 'stop' + '\n'
+                );
               }}
             />
           )}
@@ -240,6 +257,21 @@ export default class GpsTest extends React.PureComponent<NavigationInjectedProps
                 this.setState({ position: rs });
               } catch (e) {
                 this.setState({ error: e });
+              }
+            }}
+          />
+          <ListItem
+            title="share gps file"
+            onPress={async () => {
+              await Fs.shareFile(Fs.paths.docs + '/gps.csv');
+            }}
+          />
+          <ListItem
+            title="delete gps file"
+            onPress={async () => {
+              const stat = await Fs.stat(Fs.paths.docs + '/gps.csv');
+              if (stat.exists) {
+                await Fs.deleteFile(Fs.paths.docs + '/gps.csv');
               }
             }}
           />
