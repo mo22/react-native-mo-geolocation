@@ -3,6 +3,9 @@ import { Event } from 'mo-core';
 import * as ios from './ios';
 import * as android from './android';
 
+// "dom" lib is incompatible with react-native
+declare var navigator: any;
+
 
 
 /**
@@ -217,7 +220,7 @@ export class Geolocation {
         }
         if (active) {
           this.watch = navigator.geolocation.watchPosition(
-            (rs) => {
+            (rs: any) => {
               const event: GeolocationResult = {
                 time: rs.timestamp,
                 latitude: rs.coords.latitude,
@@ -233,7 +236,7 @@ export class Geolocation {
                 observer.emit(event);
               }
             },
-            (e) => {
+            (e: any) => {
               const error = new GeolocationError(e.message);
               for (const observer of this.observers) {
                 observer.emit(error);
