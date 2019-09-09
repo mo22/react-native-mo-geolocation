@@ -156,7 +156,7 @@ public final class ReactNativeMoGeolocation extends ReactContextBaseJavaModule {
         listenerHolder.value = new ActivityEventListener() {
             @Override
             public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-                if (requestCode == 123413) {
+                if (requestCode == 12341) {
                     promise.resolve(null);
                     getReactApplicationContext().removeActivityEventListener(listenerHolder.value);
                 }
@@ -166,6 +166,6 @@ public final class ReactNativeMoGeolocation extends ReactContextBaseJavaModule {
             }
         };
         getReactApplicationContext().addActivityEventListener(listenerHolder.value);
-        getReactApplicationContext().startActivityForResult(intent, 123413, null);
+        getReactApplicationContext().startActivityForResult(intent, 12341, null);
     }
 }
