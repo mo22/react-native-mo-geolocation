@@ -101,9 +101,11 @@ public final class ReactNativeMoGeolocation extends ReactContextBaseJavaModule {
 
     @Override
     public void onCatalystInstanceDestroy() {
-        super.onCatalystInstanceDestroy();
-        fusedLocationClient.removeLocationUpdates(this.locationCallback);
         getReactApplicationContext().stopService(new Intent(getReactApplicationContext(), ReactNativeMoGeolocationService.class));
+        if (fusedLocationClient != null) {
+            fusedLocationClient.removeLocationUpdates(this.locationCallback);
+        }
+        super.onCatalystInstanceDestroy();
     }
 
     @SuppressWarnings("unused")

@@ -57,9 +57,9 @@ RCT_EXPORT_METHOD(requestAuthorization:(NSDictionary*)args) {
 }
 
 RCT_EXPORT_METHOD(openSettings) {
+    NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
 //    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"%@&path=LOCATION/%@", UIApplicationOpenSettingsURLString, [[NSBundle mainBundle] bundleIdentifier]]];
-    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"App-prefs:root=LOCATION_SERVICES"]];
-    NSLog(@"URL %@", url);
+//    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"App-Prefs:root=Privacy&path=LOCATION"]];
     if (@available(iOS 10.0, *)) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     } else {
