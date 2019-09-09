@@ -5379,10 +5379,10 @@ react-native-mo-fs@^0.1.4:
     base64-arraybuffer "^0.2.0"
     mo-core "^0.1.1"
 
-react-native-mo-geolocation@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-mo-geolocation/-/react-native-mo-geolocation-0.1.1.tgz#25ea387cfbc422750c637f9e278df86a2c6c5fc5"
-  integrity sha512-zzLjYwO+jsQboJaAzd7xjBXc8Ptba4FWBye48MmbdaaBTLh+u9oCulFtHp3kbOxnpcZs/FmQi3HBUvKPIakgYA==
+react-native-mo-geolocation@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-mo-geolocation/-/react-native-mo-geolocation-0.1.2.tgz#8e63ade03784cb9e3efdeb08101ac8f26b5b0ee7"
+  integrity sha512-PVj+6gk0WjsmYzD/awjDvbLxNQ6yg7IKDFX7+KmlViZ68b0UV+gmlm5D7t2dmeNIP4ayrL2WDahmFJ9zYiLRzQ==
   dependencies:
     mo-core "^0.1.1"
 
