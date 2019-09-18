@@ -16,8 +16,8 @@ RCT_EXPORT_MODULE()
     return @[ @"ReactNativeMoGeolocation" ];
 }
 
+// CLLocationManager needs a queue with active runloop
 - (dispatch_queue_t)methodQueue {
-    // CLLocationManager needs a queue with active runloop
     return dispatch_get_main_queue();
 }
 
