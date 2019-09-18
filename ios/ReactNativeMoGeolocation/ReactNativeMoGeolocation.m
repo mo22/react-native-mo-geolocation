@@ -17,6 +17,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (dispatch_queue_t)methodQueue {
+    // CLLocationManager needs a queue with active runloop
     return dispatch_get_main_queue();
 }
 
