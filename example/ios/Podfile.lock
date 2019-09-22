@@ -60,7 +60,7 @@ PODS:
     - React
   - react-native-mo-fs (0.1.10):
     - React
-  - react-native-mo-geolocation (0.1.4):
+  - react-native-mo-geolocation (0.1.6):
     - React
   - React-RCTActionSheet (0.60.5):
     - React-Core (= 0.60.5)
@@ -196,7 +196,7 @@ SPEC CHECKSUMS:
   React-jsinspector: e08662d1bf5b129a3d556eb9ea343a3f40353ae4
   react-native-maps: 190c02ca533fddac5bb49cf17bdece3644612107
   react-native-mo-fs: b6be30d677cdd617934b46eb86347b9bb6bc01a0
-  react-native-mo-geolocation: 5e036d6d0f361bac9a9b4280b729f8c5e1b77a1a
+  react-native-mo-geolocation: 3a64bf0716e12e03f22fbf433b7338c3f46f2031
   React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
   React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e
   React-RCTBlob: 5e2b55f76e9a1c7ae52b826923502ddc3238df24
