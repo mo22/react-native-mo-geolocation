@@ -16,6 +16,8 @@ android {
 dependencies {
     // use configurations.all { resolutionStrategy { force 'com.....:version' } } in root gradle to override
     compileOnly 'com.android.support:support-annotations:28.0.0'
-    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+
+    //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
 }
