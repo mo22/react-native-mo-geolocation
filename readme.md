@@ -2,7 +2,13 @@
 
 Geolocation and Background-Geolocation API
 
+## Installation
+
+Install just like your ordinary react-native module.
+
 ## Usage
+
+Please check the [example/](example/) code.
 
 ```ts
 import { Geolocation, GeolocationAccuracy, GeolocationPermissionStatus } from 'react-native-mo-geolocation';
