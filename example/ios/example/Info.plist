@@ -40,7 +40,7 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>example</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
@@ -81,7 +81,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-  <key>UIFileSharingEnabled</key>
-  <true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 </dict>
 </plist>
