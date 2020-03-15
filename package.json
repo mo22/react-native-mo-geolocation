@@ -1,6 +1,6 @@
 {
   "name": "react-native-mo-geolocation",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "react-native geolocation api with background support",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,10 +13,10 @@
     "*.podspec"
   ],
   "devDependencies": {
-    "@types/react-native": "^0.60.25",
-    "react": "^16.12.0",
+    "@types/react-native": "^0.61.22",
+    "react": "^16.13.0",
     "react-native": "^0.61.5",
-    "typescript": "^3.7.3"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "mo-core": "^0.1.4"
