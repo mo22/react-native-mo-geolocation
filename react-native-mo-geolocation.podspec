@@ -9,7 +9,7 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '9.0'
   spec.requires_arc = true
   spec.source_files = "ios/*/*.{h,m}"
-  spec.dependency "React"
+  spec.dependency "React-Core"
   spec.summary = package['description'] or "none"
   spec.homepage = package['homepage'] or "none"
   spec.license = package['license']
