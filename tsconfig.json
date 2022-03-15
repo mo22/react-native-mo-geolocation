@@ -3,11 +3,14 @@
     "declaration": true,
     "outDir": "lib",
     "sourceMap": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
     "jsx": "react",
-    "lib": ["es6"],
+    "lib": ["es6", "es2017"],
     "moduleResolution": "node",
     "strict": true,
-    "target": "esnext"
+    "target": "esnext",
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
   "compileOnSave": true
