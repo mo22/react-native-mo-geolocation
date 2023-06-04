@@ -33,7 +33,7 @@ export interface Module {
     openSettings(): void;
     setConfig(args: Config): void;
 }
-export declare type Event = {
+export type Event = {
     type: 'didChangeAuthorizationStatus';
     status: AuthorizationStatus;
 } | {

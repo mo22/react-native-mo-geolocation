@@ -20,7 +20,7 @@ export interface Module {
     setConfig(args: Config): void;
     openSettings(): void;
 }
-export declare type Event = {
+export type Event = {
     type: 'onLocationResult';
     time: number;
     latitude: number;

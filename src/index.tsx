@@ -257,9 +257,9 @@ export class Geolocation {
 
       }
 
-    } catch (err: any) {
-      for (const i of this.observers) i.emit(err);
-      throw err;
+    } catch (e) {
+      for (const i of this.observers) i.emit(e);
+      throw e;
     }
   }
 

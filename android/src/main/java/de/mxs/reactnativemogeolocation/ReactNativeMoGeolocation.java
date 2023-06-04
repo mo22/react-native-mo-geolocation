@@ -1,5 +1,6 @@
 package de.mxs.reactnativemogeolocation;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
@@ -133,9 +134,13 @@ public final class ReactNativeMoGeolocation extends ReactContextBaseJavaModule {
 
         if (args.getBoolean("requestLocationUpdates")) {
             LocationRequest request = new LocationRequest();
-            request.setPriority(args.getInt("priority"));
+            if (args.hasKey("priority")) {
+                request.setPriority(args.getInt("priority"));
+            }
             request.setInterval(args.getInt("interval"));
-            request.setSmallestDisplacement((float)args.getDouble("smallestDisplacement"));
+            if (args.hasKey("smallestDisplacement")) {
+                request.setSmallestDisplacement((float)args.getDouble("smallestDisplacement"));
+            }
             fusedLocationClient.requestLocationUpdates(request, this.locationCallback, null);
         } else {
             fusedLocationClient.removeLocationUpdates(this.locationCallback);
@@ -169,5 +174,15 @@ public final class ReactNativeMoGeolocation extends ReactContextBaseJavaModule {
         };
         getReactApplicationContext().addActivityEventListener(listenerHolder.value);
         getReactApplicationContext().startActivityForResult(intent, 12341, null);
+    }
+
+    @SuppressWarnings("unused")
+    @ReactMethod
+    public void addListener(String eventName) {
+    }
+
+    @SuppressWarnings("unused")
+    @ReactMethod
+    public void removeListeners(Integer count) {
     }
 }
