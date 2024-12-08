@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <application>
-        <service android:name="de.mxs.reactnativemogeolocation.ReactNativeMoGeolocationService" />
+        <service android:name="de.mxs.reactnativemogeolocation.ReactNativeMoGeolocationService" android:foregroundServiceType="location" />
     </application>
 </manifest>
 
