@@ -96,9 +96,9 @@ export class Geolocation {
   public static readonly android = android;
 
   private static lastResult?: GeolocationResult;
-  private static observers: { emit: (val: GeolocationResult|Error) => void; options: GeolocationOptions; }[] = [];
+  private static observers: { emit: (val: GeolocationResult | Error) => void; options: GeolocationOptions; }[] = [];
   private static subscription?: EmitterSubscription;
-  private static currentConfig?: ios.Config|android.Config;
+  private static currentConfig?: ios.Config | android.Config;
   private static verbose: boolean = false;
   private static watch?: number;
 
@@ -199,8 +199,8 @@ export class Geolocation {
           priority:
             (accuracy >= 1000) ?
               android.Priority.PRIORITY_NO_POWER :
-            (accuracy < 0) ? android.Priority.PRIORITY_HIGH_ACCURACY :
-              android.Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+              (accuracy < 0) ? android.Priority.PRIORITY_HIGH_ACCURACY :
+                android.Priority.PRIORITY_BALANCED_POWER_ACCURACY,
           interval: 1000,
           smallestDisplacement: Math.max(0, accuracy),
           requestLocationUpdates: active,
@@ -257,9 +257,10 @@ export class Geolocation {
 
       }
 
-    } catch (e) {
+    } catch (ex: unknown) {
+      const e = ex instanceof Error ? ex : new Error('unknown error');
       for (const i of this.observers) i.emit(e);
-      throw e;
+      throw ex;
     }
   }
 
@@ -277,7 +278,7 @@ export class Geolocation {
   /**
    * get permissions
    */
-  public static async getPermissionStatus(args: { background?: boolean } = {}): Promise<GeolocationPermissionStatus> {
+  public static async getPermissionStatus(args: { background?: boolean; } = {}): Promise<GeolocationPermissionStatus> {
     if (ios.Module) {
       const status = await ios.Module.getStatus();
       if (status.authorizationStatus === ios.AuthorizationStatus.Denied) {
@@ -302,15 +303,15 @@ export class Geolocation {
   /**
    * request permissions
    */
-  public static async requestPermissions(args: { background?: boolean } = {}): Promise<GeolocationPermissionStatus> {
+  public static async requestPermissions(args: { background?: boolean; } = {}): Promise<GeolocationPermissionStatus> {
     if (ios.Module) {
       const status = await ios.Module.getStatus();
       if (args.background && status.backgroundModes.indexOf('location') < 0) {
         throw new GeolocationError('missing location background mode in capabilities');
       }
-      const requestAuthorization = async (args: { always: boolean }): Promise<GeolocationPermissionStatus> => {
+      const requestAuthorization = async (args: { always: boolean; }): Promise<GeolocationPermissionStatus> => {
         const res = new Promise<GeolocationPermissionStatus>((resolve) => {
-          let sub: EmitterSubscription|undefined = ios.Events!.addListener('ReactNativeMoGeolocation', (rs) => {
+          let sub: EmitterSubscription | undefined = ios.Events!.addListener('ReactNativeMoGeolocation', (rs) => {
             if (rs.type !== 'didChangeAuthorizationStatus') return;
             if (rs.status === ios.AuthorizationStatus.Denied) {
               resolve(GeolocationPermissionStatus.DENIED);
@@ -403,8 +404,8 @@ export class Geolocation {
    * @param options GeolocationOptions
    * @returns Event<GeolocationResult>
    */
-  public static observe(options?: GeolocationOptions): Event<GeolocationResult|Error> {
-    return new Event<GeolocationResult|Error>((emit) => {
+  public static observe(options?: GeolocationOptions): Event<GeolocationResult | Error> {
+    return new Event<GeolocationResult | Error>((emit) => {
       if (this.verbose) console.log(`ReactNativeMoGeolocation.observe.start options=${JSON.stringify(options)}`);
       const item = { emit: emit, options: options || {} };
       this.observers.push(item);
@@ -446,7 +447,7 @@ export class Geolocation {
     const x = (
       Math.cos(deg2rad(p1.latitude)) * Math.sin(deg2rad(p2.latitude)) -
       Math.sin(deg2rad(p1.latitude)) * Math.cos(deg2rad(p2.latitude)) * Math.cos(deg2rad(p2.longitude) -
-      deg2rad(p1.longitude))
+        deg2rad(p1.longitude))
     );
     let brng = rad2deg(Math.atan2(y, x));
     if (brng < 0) brng += 360;
